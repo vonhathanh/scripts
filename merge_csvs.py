@@ -24,6 +24,10 @@ def merge(path: str, useless_columns: list[str] = (), output_file: str = "final.
                 inplace=True)
 
         dfs.append(df)
+
+        df.to_csv(file, index=False,
+                  columns=["Open time", "Open", "High", "Low", "Close", "Close time"])
+
     # actually merge data happens here
     df = pd.concat(dfs, ignore_index=True)
     df.to_csv(os.path.join(path, output_file), index=False, columns=["Open time", "Open", "High", "Low", "Close", "Close time"])
@@ -46,4 +50,4 @@ if __name__ == '__main__':
                        "Taker buy quote asset volume",
                        "Ignore"]
 
-    merge(f"../data/{symbol}/{tf}", useless_columns=useless_columns, output_file=f"final_{tf}.csv")
+    merge(f"./data/{symbol}/{tf}", useless_columns=useless_columns, output_file=f"final_{tf}.csv")
