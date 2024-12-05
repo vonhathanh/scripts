@@ -22,7 +22,7 @@ def merge(path: str, useless_columns: list[str] = (), output_file: str = "final.
         date_match = re.search(r'\d{4}-\d{2}', file)
         date = date_match.group() if date_match else ""
 
-        if date < start_month or date > end_month:
+        if (start_month and date < start_month) or (end_month and date > end_month):
             continue
 
         print("processing file: ", file)
@@ -47,9 +47,10 @@ if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument("symbol", type=str, choices=["bnb", "eth", "btc", "matic"])
     ap.add_argument("tf", type=str, choices=["1m", "15m", "1h", "4h", "1d"])
-    ap.add_argument("--start", type=str, required=False,
+    ap.add_argument("--start", type=str, required=False, default="",
                     help="string indicate starting year and month of the merge, must be in the form yyyy-mm")
     ap.add_argument("--end", type=str, required=False,
+                    default="",
                     help="string indicate ending year and month of the merge, must be in the form yyyy-mm")
 
     args = vars(ap.parse_args())
