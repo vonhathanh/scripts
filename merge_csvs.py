@@ -5,8 +5,16 @@ import re
 
 import pandas as pd
 
+useless_columns = ["Volume",
+                   "Quote asset volume",
+                   "Number of trades",
+                   "Taker buy base asset volume",
+                   "Taker buy quote asset volume",
+                   "Ignore"]
+final_columns = ["Open time", "Open", "High", "Low", "Close", "Close time"]
 
-def merge(path: str, useless_columns: list[str] = (), output_file: str = "final.csv", start_month="", end_month=""):
+def merge(path: str, output_file: str = "final.csv", start_month="", end_month=""):
+
     files = glob.glob(os.path.join(path, "*.csv"))
     files = sorted(files)
     columns = ["Open time", "Open", "High", "Low", "Close", "Volume", "Close time", "Quote asset volume",
@@ -27,20 +35,20 @@ def merge(path: str, useless_columns: list[str] = (), output_file: str = "final.
 
         print("processing file: ", file)
         df = pd.read_csv(file)
-        # file has no column header, so we must add one before remove them
-        df.columns = columns
-        df.drop(columns=useless_columns,
-                inplace=True)
+
+        if df.columns.tolist() != final_columns:
+            # file has no column header, so we must add one before remove them
+            df.columns = columns
+            # save file with redudant columns removed
+            df.to_csv(file, index=False,
+                      columns=final_columns)
 
         dfs.append(df)
 
-        df.to_csv(file, index=False,
-                  columns=["Open time", "Open", "High", "Low", "Close", "Close time"])
-
     # actually merge data happens here
     df = pd.concat(dfs, ignore_index=True)
-    df.to_csv(os.path.join(path, output_file), index=False,
-              columns=["Open time", "Open", "High", "Low", "Close", "Close time"])
+    # df may contains redudant columns so columns=final_columns is required
+    df.to_csv(os.path.join(path, output_file), index=False, columns=final_columns)
 
 
 if __name__ == '__main__':
@@ -60,12 +68,5 @@ if __name__ == '__main__':
     start_month = args["start"]
     end_month = args["end"]
 
-    useless_columns = ["Volume",
-                       "Quote asset volume",
-                       "Number of trades",
-                       "Taker buy base asset volume",
-                       "Taker buy quote asset volume",
-                       "Ignore"]
-
-    merge(f"./data/{symbol}/{tf}", useless_columns=useless_columns, output_file=f"final_{tf}.csv",
+    merge(f"./data/{symbol}/{tf}", output_file=f"final_{tf}.csv",
           start_month=start_month, end_month=end_month)
