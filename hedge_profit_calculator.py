@@ -21,6 +21,10 @@ class Position:
     def get_pnl(self, price: float) -> float:
         return self.quantity * (price - self.avg_price)
 
+    def close(self):
+        self.quantity = 0.0
+        self.avg_price = 0.0
+
 # def test_update_position():
 #     p = Position(0.0, 0.0)
 #     p.update(Trade("buy", 100.0, 1.0))
@@ -52,6 +56,8 @@ class Account:
     def close(self, price: float):
         self.balance += (self.long.quantity - self.short.quantity) * price + self.margin
         self.margin = 0.0
+        self.long.close()
+        self.short.close()
 
     def get_unrealized_pnl(self, price: float):
         return self.long.get_pnl(price) - self.short.get_pnl(price)
