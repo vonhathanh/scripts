@@ -25,18 +25,6 @@ class Position:
         self.quantity = 0.0
         self.avg_price = 0.0
 
-# def test_update_position():
-#     p = Position(0.0, 0.0)
-#     p.update(Trade("buy", 100.0, 1.0))
-#
-#     assert p.avg_price == 100.0
-#     assert p.quantity == 1.0
-#
-#     p.update(Trade("buy", 200.0, 1.0))
-#
-#     assert p.avg_price == 150.0
-#     assert p.quantity == 2.0
-
 class Account:
 
     def __init__(self, balance: float):
